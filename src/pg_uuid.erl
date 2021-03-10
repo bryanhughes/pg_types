@@ -24,18 +24,18 @@ init(_Opts) ->
 encode(<<>>, _) ->
     <<-1:32/integer>>;
 encode(<<Uuid:?int128>>, _) ->
-    io:format("Uuid=~p~n", [Uuid]),
+    logger:info("Uuid=~p", [Uuid]),
     <<16:?int32, Uuid:?int128>>;
 encode(Uuid, _) when is_integer(Uuid) ->
-    io:format("Uuid=~p~n", [Uuid]),
+    logger:info("Uuid=~p", [Uuid]),
     <<16:?int32, Uuid:?int128>>;
 encode(Uuid, _) when is_list(Uuid) ->
-    io:format("Uuid=~p~n", [Uuid]),
+    logger:info("Uuid=~p", [Uuid]),
     Hex = [H || H <- Uuid, H =/= $-],
     {ok, [Int], _} = io_lib:fread("~16u", Hex),
     <<16:?int32, Int:?int128>>;
 encode(Uuid, _) when is_binary(Uuid) ->
-    io:format("Uuid=~p~n", [Uuid]),
+    logger:info("Uuid=~p", [Uuid]),
     Hex = binary:replace(Uuid, <<"-">>, <<>>, [global]),
     Int = erlang:binary_to_integer(Hex, 16),
     <<16:?int32, Int:?int128>>.
