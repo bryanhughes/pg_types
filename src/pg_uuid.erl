@@ -5,7 +5,7 @@
 -export([init/1,
          encode/2,
          decode/2,
-         type_spec/0]).
+         type_spec/0, hello/0]).
 
 -include("pg_types.hrl").
 -include("pg_protocol.hrl").
@@ -21,21 +21,25 @@ init(_Opts) ->
     Config = application:get_env(pg_types, uuid_format, binary),
     {[<<"uuid_send">>], Config}.
 
+hello() ->
+    io:format("HELLO!~n", []),
+    hello.
+
 encode(<<>>, _) ->
     <<-1:32/integer>>;
 encode(<<Uuid:?int128>>, _) ->
-    logger:info("Uuid=~p", [Uuid]),
+    io:format("Uuid=~p", [Uuid]),
     <<16:?int32, Uuid:?int128>>;
 encode(Uuid, _) when is_integer(Uuid) ->
-    logger:info("Uuid=~p", [Uuid]),
+    io:format("Uuid=~p", [Uuid]),
     <<16:?int32, Uuid:?int128>>;
 encode(Uuid, _) when is_list(Uuid) ->
-    logger:info("Uuid=~p", [Uuid]),
+    io:format("Uuid=~p", [Uuid]),
     Hex = [H || H <- Uuid, H =/= $-],
     {ok, [Int], _} = io_lib:fread("~16u", Hex),
     <<16:?int32, Int:?int128>>;
 encode(Uuid, _) when is_binary(Uuid) ->
-    logger:info("Uuid=~p", [Uuid]),
+    io:format("Uuid=~p", [Uuid]),
     Hex = binary:replace(Uuid, <<"-">>, <<>>, [global]),
     Int = erlang:binary_to_integer(Hex, 16),
     <<16:?int32, Int:?int128>>.
